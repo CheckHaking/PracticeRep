@@ -21,7 +21,7 @@ class Biomedico(db.Base):
         print('Biomedico creado con exito ')
 
     def __str__(self):
-        return "Se ha creado una Persona({},{})".format(self.nombre, self.apellido)
+        return "Biomedico({},{}, {})".format(self.nombre, self.apellido, self.id_personal)
 
 class Equipo(db.Base):
     # Aqui es donde se configuran cosas especificas de la base de datps
@@ -47,4 +47,4 @@ class Equipo(db.Base):
         print('Se ha creado un equipo con exito!')
 
     def __str__(self):
-        return 'Equipo: ({},{},{})'.format(self.nombre, self.marca, self.modelo)
+        return 'Equipo: ({},{},{},{})'.format(self.nombre, self.marca, self.modelo, self.localizacion)

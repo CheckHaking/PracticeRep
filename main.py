@@ -97,7 +97,24 @@ def agregarEquipo():
     print('Equipo creado!!')
 
 def editarEquipo():
-    pass
+    print('\nEditar Equipo')
+    equipo_id = int(input('Ingrese el Id del equipo a editar: '))
+    equipo = db.session.query(Equipo).filter(Equipo.id_equipo == equipo_id).first() #.first() devuelve la primera coincidencia
+
+    if equipo is None:
+        print('El equipo no existe')
+    else:
+        print(equipo)
+        nueva_localizacion = input('\nIngrese la nueva localizacion: ')
+        equipo.localizacion = nueva_localizacion
+        db.session.commit()
+        db.session.close()
+        print('Se ha actualizado el equipo!')
+
+
+
+
+
 
 
 def eliminarEquipo():
@@ -128,6 +145,46 @@ def verEquipos():
                                                   e.clasificacion_riezgo,
                                                   e.localizacion))
 
+
+def agregarBiomedico():
+    print('Agregar Biomedico\n')
+    id_personal = int(input("Ingrese el id personal: "))
+    nombre = input("Nombre: ")
+    apellido = input('Apellido:')
+
+    b = Biomedico(id_personal, nombre, apellido)
+    db.session.add(b)
+    db.session.commit()
+    db.session.close()
+    print('Biomedico creado con exito!!')
+
+def editarBiomedico():
+    print("\nEditar Biomedico")
+    biomedico_id = input('Ingrese el id de la persona que quiere editar: ')
+    biomedico = db.session.query(Biomedico).filter(Biomedico.id_biomedico == biomedico_id).first()
+
+    if biomedico == None:
+        print('No se han encontrado coincidencias')
+    else:
+        print(biomedico)
+        new_personal_id = int(input('Ingrese el nuevo id personal: '))
+        biomedico.id_personal = new_personal_id
+        db.session.commit()
+        db.session.close()
+        print('Biomedico acualizado!')
+def eliminarBiomedico():
+    pass
+def verBiomedicos():
+
+    biomedicos = db.session.query(Biomedico).all()
+
+    for i in biomedicos:
+        print('''
+        => ID: {}
+        => ID personal: {} 
+        => Nombre: {}
+        => Apellido: {}'''.format(i.id_biomedico, i.id_personal, i.nombre, i.apellido))
+
 if __name__ == "__main__":
 
     # Reseteamos la base de datos si existe
@@ -147,8 +204,12 @@ if __name__ == "__main__":
               "5. Eliminar equipo \n"
               "6. Ver Equipos \n" 
               ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
-              "7. Salir")  # CRUD: CREAR MODIFICAR ELIMINAR  CONSULTAR
-        option = int(input("\nIntroduzca una opcion (1-7): "))
+              "7. Agregar Biomedico\n"
+              "8. Editar Biomedico\n"
+              "9. Eliminar Biomedico\n"
+              "10. Ver Biomedicos\n"
+              "PRESS 0. Salir")  # CRUD: CREAR MODIFICAR ELIMINAR  CONSULTAR
+        option = int(input("\nIntroduzca una opcion (1-10) 0 para salir: "))
         if option == 1:
             agregarEquiposIniciales()
         elif option == 2:
@@ -162,6 +223,14 @@ if __name__ == "__main__":
         elif option == 6:
             verEquipos()
         elif option == 7:
+            agregarBiomedico()
+        elif option == 8:
+            editarBiomedico()
+        elif option == 9:
+            eliminarBiomedico()
+        elif option == 10:
+            verBiomedicos()
+        elif option == 0:
             sys.exit(1)
         else:
             print('Opcion no valida')
