@@ -3,6 +3,7 @@
 import db
 from models import Biomedico, Equipo
 import sys
+from sqlalchemy import and_, or_, text
 
 
 def agregarEquiposIniciales():
@@ -70,8 +71,69 @@ def agregarEquiposIniciales():
 
 
 def consultasDePrueba():
-    pass
+    print('\n#1 Obtener un objeto a partir de su id(primarykey). Si no lo encuentra devuelve None')
+    id = 3
+    result = db.session.get(Equipo, id)
+    print(result)
 
+    print('\nObtener todos los objetos de una tabla')
+    res = db.session.query(Equipo).all()
+    for e in res:
+        print('''\n\tNombre: {}
+        Marca: {}
+        Modelo: {}
+        Localizacion: {}'''.format(e.nombre, e.marca, e.modelo, e.localizacion))
+
+    print('\n #3 Obtener el primer objeto de una consulta (el mas antiguo)')
+    res = db.session.query(Equipo).first()
+    print(res)
+
+    print('\n#4 Contar el numero de elementos de una tabla')
+    res = db.session.query(Equipo).count()
+    print('El numero de Equipos registradas es de {}'.format(res))
+
+    print('\n #5. Ordenar el resultado de una consulta')
+    res = db.session.query(Equipo).order_by('nombre').all()
+    for e in res:
+        print(e)
+
+    print('\n #6. Ordenar el resultado de una consulta y mostrar los 3 primeros')
+    res = db.session.query(Equipo).order_by('nombre').limit(3)
+    for e in res:
+        print(e)
+
+    print('\n #7.aplciar filtros a una consulta con filter')
+    res = db.session.query(Equipo).filter(Equipo.localizacion == 'Terapia intensiva').order_by('nombre')
+    for e in res:
+        print(e)
+
+    print('\n #8 Aplicar el filtro like (encuentra patrones) ilike(da igual si es mayuscula o minuscula)')
+    res = db.session.query(Equipo).filter(Equipo.nombre.ilike('m%')).all()
+    for e in res:
+        print(e)
+
+    print('\n #9 Aplicar el filtro in_ ')
+    res = db.session.query(Equipo).filter(Equipo.id_equipo.in_([1,2,6])).all()
+    for e in res:
+        print(e)
+    print('\n #10 Aplicar el filtro and_')
+    c1 = Equipo.nombre.ilike('m%')
+    c2 = Equipo.clasificacion_riezgo < 5
+    res = db.session.query(Equipo).filter(and_(c1,c2)).all()
+    for e in res:
+        print(e)
+
+    print('\n #11 Aplicar el filtro or_')
+    c1 = Equipo.nombre.ilike('m%')
+    c2 = Equipo.clasificacion_riezgo < 5
+    res = db.session.query(Equipo).filter(or_(c1,c2)).all()
+    for e in res:
+        print(e)
+
+    print('\n #12 Ejecutar instrucciones SQL explistas')
+    res = db.session.query(Equipo).from_statement(text('SELECT * FROM equipo')).all()
+    for i in res:
+        print(i)
 
 def agregarEquipo():
     print('\n Agregar Equipo')
@@ -118,7 +180,26 @@ def editarEquipo():
 
 
 def eliminarEquipo():
-    pass
+    print('\nBorrar Equipo')
+
+    equipo_id = int(input('Ingrese el id del equipo que desea borrar: '))
+    equipo = db.session.query(Equipo).filter(Equipo.id_equipo == equipo_id).first()
+
+    if equipo == None:
+        print('No se encotraron coincidencias')
+    elif equipo:
+        print(equipo)
+        op = int(input('Seleccione para confirmar borrar este equipo? (1 = si, 0 = no): '))
+        if op == 1:
+            print('Borrando equipo...')
+            db.session.delete(equipo)
+            db.session.commit()
+            db.session.close()
+            print('Equipo borrado con exito!')
+        else:
+            pass
+
+
 
 
 def verEquipos():
@@ -173,7 +254,28 @@ def editarBiomedico():
         db.session.close()
         print('Biomedico acualizado!')
 def eliminarBiomedico():
-    pass
+    print('\nBorrar Biomedico')
+    biomedico_id = int(input("Ingrese el id del biomedico que desea borrar: "))
+    biomedico = db.session.query(Biomedico).filter(Biomedico.id_biomedico == biomedico_id).first()
+
+    if biomedico == None:
+        print('No se encontraron coincidencias')
+    elif biomedico:
+        print(biomedico)
+        op = int(input('Seleccione para confirmar (1:si, 0:no): '))
+        if op == 1:
+            print('Borrando Biomedico...')
+            db.session.delete(biomedico)
+            db.session.commit()
+            db.session.close()
+            print('Se borro exitosamente!')
+        else:
+            pass
+
+
+
+
+
 def verBiomedicos():
 
     biomedicos = db.session.query(Biomedico).all()
